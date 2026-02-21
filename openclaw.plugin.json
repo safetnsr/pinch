@@ -1,0 +1,45 @@
+{
+  "id": "pinch",
+  "name": "pinch",
+  "version": "0.1.0",
+  "description": "know what your agent costs — openclaw cost tracking plugin",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "budget": {
+        "type": "object",
+        "description": "Budget limits in USD",
+        "properties": {
+          "daily": { "type": "number", "description": "Daily budget in USD" },
+          "weekly": { "type": "number", "description": "Weekly budget in USD" },
+          "monthly": { "type": "number", "description": "Monthly budget in USD" }
+        }
+      },
+      "dashboard": {
+        "type": "object",
+        "properties": {
+          "enabled": { "type": "boolean", "default": true },
+          "port": { "type": "number", "default": 3334 }
+        }
+      },
+      "pricing": {
+        "type": "object",
+        "description": "Model pricing overrides (USD per million tokens)",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "input": { "type": "number" },
+            "output": { "type": "number" },
+            "cacheRead": { "type": "number" },
+            "cacheWrite": { "type": "number" }
+          }
+        }
+      },
+      "retentionDays": {
+        "type": "number",
+        "default": 90,
+        "description": "Days to retain raw JSONL records"
+      }
+    }
+  }
+}

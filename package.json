@@ -1,0 +1,37 @@
+{
+  "name": "@safetnsr/pinch",
+  "version": "0.1.0",
+  "description": "know what your agent costs — openclaw cost tracking plugin",
+  "type": "module",
+  "main": "./server/plugin.js",
+  "bin": {
+    "pinch": "./bin/pinch.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "node --test tests/*.test.js"
+  },
+  "openclaw": {
+    "extensions": ["./server/plugin.js"]
+  },
+  "dependencies": {
+    "hono": "^4.7.0",
+    "@hono/node-server": "^1.14.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.0"
+  },
+  "files": [
+    "server/",
+    "pricing.json",
+    "openclaw.plugin.json",
+    "bin/"
+  ],
+  "keywords": ["openclaw", "cost-tracking", "agent", "budget", "llm"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/safetnsr/pinch.git"
+  }
+}

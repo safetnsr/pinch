@@ -1,0 +1,183 @@
+{
+  "version": 3,
+  "updatedAt": "2026-02-21",
+  "models": {
+    "claude-opus-4": {
+      "provider": "anthropic",
+      "input": 15.00,
+      "output": 75.00,
+      "cacheRead": 1.88,
+      "cacheWrite": 18.75,
+      "effectiveDate": "2025-05-14",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/models"
+    },
+    "claude-sonnet-4": {
+      "provider": "anthropic",
+      "input": 3.00,
+      "output": 15.00,
+      "cacheRead": 0.30,
+      "cacheWrite": 3.75,
+      "effectiveDate": "2025-05-14",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/models"
+    },
+    "claude-haiku-3.5": {
+      "provider": "anthropic",
+      "input": 0.80,
+      "output": 4.00,
+      "cacheRead": 0.08,
+      "cacheWrite": 1.00,
+      "effectiveDate": "2024-10-29",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/models"
+    },
+    "gpt-4o": {
+      "provider": "openai",
+      "input": 2.50,
+      "output": 10.00,
+      "effectiveDate": "2024-05-13",
+      "source": "https://openai.com/api/pricing"
+    },
+    "gpt-4o-mini": {
+      "provider": "openai",
+      "input": 0.15,
+      "output": 0.60,
+      "effectiveDate": "2024-07-18",
+      "source": "https://openai.com/api/pricing"
+    },
+    "gpt-4.1": {
+      "provider": "openai",
+      "input": 2.00,
+      "output": 8.00,
+      "effectiveDate": "2025-04-14",
+      "source": "https://openai.com/api/pricing"
+    },
+    "gpt-4.1-mini": {
+      "provider": "openai",
+      "input": 0.40,
+      "output": 1.60,
+      "effectiveDate": "2025-04-14",
+      "source": "https://openai.com/api/pricing"
+    },
+    "gpt-4.1-nano": {
+      "provider": "openai",
+      "input": 0.10,
+      "output": 0.40,
+      "effectiveDate": "2025-04-14",
+      "source": "https://openai.com/api/pricing"
+    },
+    "o3": {
+      "provider": "openai",
+      "input": 2.00,
+      "output": 8.00,
+      "effectiveDate": "2025-04-16",
+      "source": "https://openai.com/api/pricing"
+    },
+    "o4-mini": {
+      "provider": "openai",
+      "input": 1.10,
+      "output": 4.40,
+      "effectiveDate": "2025-04-16",
+      "source": "https://openai.com/api/pricing"
+    },
+    "gemini-2.5-pro": {
+      "provider": "google",
+      "input": 1.25,
+      "output": 10.00,
+      "effectiveDate": "2025-03-25",
+      "source": "https://ai.google.dev/pricing"
+    },
+    "gemini-2.5-flash": {
+      "provider": "google",
+      "input": 0.15,
+      "output": 0.60,
+      "effectiveDate": "2025-04-17",
+      "source": "https://ai.google.dev/pricing"
+    },
+    "gemini-2.0-flash": {
+      "provider": "google",
+      "input": 0.10,
+      "output": 0.40,
+      "effectiveDate": "2025-02-05",
+      "source": "https://ai.google.dev/pricing"
+    },
+    "deepseek-chat": {
+      "provider": "deepseek",
+      "input": 0.27,
+      "output": 1.10,
+      "cacheRead": 0.07,
+      "effectiveDate": "2025-02-08",
+      "source": "https://platform.deepseek.com/api-docs/pricing"
+    },
+    "deepseek-reasoner": {
+      "provider": "deepseek",
+      "input": 0.55,
+      "output": 2.19,
+      "effectiveDate": "2025-02-08",
+      "source": "https://platform.deepseek.com/api-docs/pricing"
+    },
+    "mistral-large": {
+      "provider": "mistral",
+      "input": 2.00,
+      "output": 6.00,
+      "effectiveDate": "2025-01-29",
+      "source": "https://mistral.ai/products/la-plateforme#pricing"
+    },
+    "codestral": {
+      "provider": "mistral",
+      "input": 0.30,
+      "output": 0.90,
+      "effectiveDate": "2025-01-29",
+      "source": "https://mistral.ai/products/la-plateforme#pricing"
+    },
+    "grok-3": {
+      "provider": "xai",
+      "input": 3.00,
+      "output": 15.00,
+      "effectiveDate": "2025-02-18",
+      "source": "https://docs.x.ai/docs/models"
+    },
+    "grok-3-mini": {
+      "provider": "xai",
+      "input": 0.30,
+      "output": 0.50,
+      "effectiveDate": "2025-02-18",
+      "source": "https://docs.x.ai/docs/models"
+    },
+    "llama-4-maverick": {
+      "provider": "meta",
+      "input": 0.20,
+      "output": 0.60,
+      "effectiveDate": "2025-04-05",
+      "note": "pricing varies by host provider"
+    },
+    "llama-4-scout": {
+      "provider": "meta",
+      "input": 0.15,
+      "output": 0.40,
+      "effectiveDate": "2025-04-05",
+      "note": "pricing varies by host provider"
+    }
+  },
+  "aliases": {
+    "claude-opus-4-20250514": "claude-opus-4",
+    "claude-opus-4-0514": "claude-opus-4",
+    "claude-sonnet-4-20250514": "claude-sonnet-4",
+    "claude-sonnet-4-0514": "claude-sonnet-4",
+    "claude-3-5-haiku-20241022": "claude-haiku-3.5",
+    "claude-3-5-haiku": "claude-haiku-3.5",
+    "gpt-4o-2024-11-20": "gpt-4o",
+    "gpt-4o-mini-2024-07-18": "gpt-4o-mini",
+    "deepseek-chat-v3": "deepseek-chat",
+    "deepseek-r1": "deepseek-reasoner"
+  },
+  "providerPrefixes": [
+    "anthropic/",
+    "openai/",
+    "google/",
+    "deepseek/",
+    "mistralai/",
+    "meta-llama/",
+    "xai/",
+    "cohere/",
+    "together/"
+  ]
+}

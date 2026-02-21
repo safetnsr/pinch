@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>pinch</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#1a1a1a;--s2:#222;--border:#2a2a2a;--text:#f0f0f0;--dim:#6b6b6b;--muted:#444;--accent:#5b8def;--adim:#2a3f6b;--ok:#22c55e;--warn:#eab308;--danger:#ef4444}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.4}
+body{padding:16px;display:flex;flex-direction:column;gap:12px;min-height:100%}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px}
+.kpi-strip{display:flex;gap:0;margin-bottom:20px}
+.kpi{flex:1;padding:0 20px 0 0}
+.kpi:first-child{padding-left:0}
+.kv{font-size:30px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.kl{font-size:11px;color:var(--dim);margin-top:4px}
+.kd{font-size:11px;margin-top:3px}
+.kd.up{color:#22c55e}.kd.down{color:#ef4444}.kd.neutral{color:var(--muted)}
+.kdiv{width:1px;background:var(--border);margin:0 20px 0 0;flex-shrink:0;align-self:stretch}
+.brow{display:none;align-items:center;gap:12px;margin-bottom:20px}
+.brow.on{display:flex}
+.btrack{flex:1;height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+.bfill{height:100%;border-radius:2px;transition:width .3s}
+.bfill.ok{background:var(--ok)}.bfill.warn{background:var(--warn)}.bfill.danger{background:var(--danger);animation:pulse 2s ease-in-out infinite}
+.btxt{font-size:11px;color:var(--dim);white-space:nowrap;flex-shrink:0}
+.btxt.warn{color:var(--warn)}.btxt.danger{color:var(--danger)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.chdr{display:flex;justify-content:flex-end;margin-bottom:8px}
+.rtabs,.tabs{display:flex;gap:2px}
+.rtab,.tab{background:none;border:none;color:var(--muted);font-size:12px;padding:4px 8px;cursor:pointer;border-radius:4px;font-family:inherit}
+.rtab:hover,.tab:hover{color:var(--dim)}
+.rtab.active,.tab.active{color:var(--accent);background:var(--s2)}
+.tab{padding:4px 10px}
+.cxlabels{display:flex;justify-content:space-between;margin-top:4px}
+.cxlabels span{font-size:10px;color:var(--muted)}
+.csvg{display:block;width:100%;overflow:visible}
+.bot{display:flex;gap:12px;flex:1;min-height:0}
+.bot .panel{flex:1;display:flex;flex-direction:column;min-width:0}
+.ptitle{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px;flex-shrink:0}
+.rows{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0;overflow:hidden}
+.row{position:relative;padding:8px 12px;display:flex;align-items:center;border-radius:4px;overflow:hidden}
+.row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--fill,0%);background:var(--adim);border-radius:4px;z-index:0}
+.rl{position:relative;z-index:1;color:var(--dim);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;padding-right:12px}
+.rv{position:relative;z-index:1;color:var(--text);font-size:13px;font-variant-numeric:tabular-nums;flex-shrink:0}
+.rt{position:relative;z-index:1;color:var(--muted);font-size:11px;flex-shrink:0;margin-right:10px;font-variant-numeric:tabular-nums;min-width:38px}
+.empty{display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:4px;color:var(--muted);font-size:13px;text-align:center}
+@media(max-width:900px){body{padding:10px;gap:10px}.bot{flex-direction:column}.kpi-strip{flex-wrap:wrap;gap:16px}.kpi{flex:0 0 calc(50% - 8px);padding:0}.kdiv{display:none}.kv{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="kpi-strip">
+    <div class="kpi" id="k0"><div class="kv">—</div><div class="kl">today</div><div class="kd neutral">—</div></div>
+    <div class="kdiv"></div>
+    <div class="kpi" id="k1"><div class="kv">—</div><div class="kl">this week</div><div class="kd neutral">—</div></div>
+    <div class="kdiv"></div>
+    <div class="kpi" id="k2"><div class="kv">—</div><div class="kl">this month</div><div class="kd neutral">—</div></div>
+    <div class="kdiv"></div>
+    <div class="kpi" id="k3"><div class="kv">—</div><div class="kl">input tokens</div><div class="kd neutral">&nbsp;</div></div>
+    <div class="kdiv"></div>
+    <div class="kpi" id="k4"><div class="kv">—</div><div class="kl">output tokens</div><div class="kd neutral">&nbsp;</div></div>
+  </div>
+  <div class="brow" id="brow">
+    <div class="btrack"><div class="bfill ok" id="bfill"></div></div>
+    <div class="btxt" id="btxt">—</div>
+  </div>
+  <div class="chdr">
+    <div class="rtabs">
+      <button class="rtab active" data-d="7">7d</button>
+      <button class="rtab" data-d="30">30d</button>
+      <button class="rtab" data-d="90">90d</button>
+    </div>
+  </div>
+  <svg class="csvg" id="csvg" height="80" viewBox="0 0 800 80" preserveAspectRatio="none"></svg>
+  <div class="cxlabels" id="cxl"></div>
+</div>
+
+<div class="bot">
+  <div class="panel">
+    <div class="tabs">
+      <button class="tab active" data-t="model">model</button>
+      <button class="tab" data-t="type">type</button>
+      <button class="tab" data-t="session">session</button>
+    </div>
+    <div class="rows" id="br"><div class="empty">waiting for data<br><span style="color:var(--muted);font-size:11px">pinch is tracking</span></div></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">latest runs</div>
+    <div class="rows" id="lr"><div class="empty">waiting for data<br><span style="color:var(--muted);font-size:11px">pinch is tracking</span></div></div>
+  </div>
+</div>
+
+<script>
+var S={today:null,week:null,month:null,trend:null,latest:null,days:7,tab:'model'};
+
+var MK={
+  today:{cost:4.82,budget:7,budgetPct:.69,inputTokens:245000,outputTokens:18500,records:87,prevCost:5.48,
+    byModel:{'claude-opus-4':3.4,'claude-sonnet-4':1.2,'claude-haiku-3.5':.22},
+    byType:{chat:2.9,cron:.95,subagent:.72,heartbeat:.25},
+    bySession:{'readme rewrite':.85,'twitter engage':.72,'heartbeats':.42}},
+  week:{cost:18.4,budget:35,budgetPct:.53,prevCost:16.9},
+  month:{cost:52.1,budget:100,budgetPct:.52,prevCost:48.3},
+  trend:{days:[{date:'2026-02-15',cost:3.2},{date:'2026-02-16',cost:5.8},{date:'2026-02-17',cost:4.1},{date:'2026-02-18',cost:6.9},{date:'2026-02-19',cost:3.5},{date:'2026-02-20',cost:5.4},{date:'2026-02-21',cost:4.82}]},
+  latest:{records:[
+    {ts:1740100000,label:'readme rewrite',model:'opus',cost:.34,type:'chat'},
+    {ts:1740099000,label:'twitter engage',model:'sonnet',cost:.08,type:'cron'},
+    {ts:1740098000,label:'heartbeat',model:'haiku',cost:.02,type:'heartbeat'},
+    {ts:1740097000,label:'sub: worker',model:'opus',cost:.28,type:'subagent'},
+    {ts:1740096000,label:'twitter engage',model:'sonnet',cost:.08,type:'cron'},
+    {ts:1740095000,label:'readme rewrite',model:'opus',cost:.15,type:'chat'},
+    {ts:1740094000,label:'heartbeat',model:'haiku',cost:.02,type:'heartbeat'},
+    {ts:1740093000,label:'api research',model:'sonnet',cost:.11,type:'chat'},
+    {ts:1740092000,label:'heartbeat',model:'haiku',cost:.02,type:'heartbeat'},
+    {ts:1740091000,label:'deploy check',model:'sonnet',cost:.06,type:'cron'}
+  ]}
+};
+
+function $$(n){return document.getElementById(n)}
+function fmt(n){return n==null?'—':'$'+n.toFixed(2)}
+function fmtK(n){if(n==null)return'—';return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?Math.round(n/1000)+'K':''+n}
+function delta(c,p){if(c==null||!p)return{t:'—',c:'neutral'};var d=((c-p)/p)*100;return{t:(d>0?'+':'')+d.toFixed(0)+'%',c:d<0?'up':d>0?'down':'neutral'}}
+function ftime(ts){var d=new Date(ts*1000);return(''+d.getHours()).padStart(2,'0')+':'+(''+d.getMinutes()).padStart(2,'0')}
+function fdate(s,long){var p=s.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]);return long?['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]:(d.getMonth()+1)+'/'+d.getDate()}
+
+function setKpi(id,val,lbl,d){
+  var el=$$(id);
+  el.querySelector('.kv').textContent=val;
+  if(lbl)el.querySelector('.kl').textContent=lbl;
+  var de=el.querySelector('.kd');
+  de.textContent=d.t||'\u00a0';
+  de.className='kd '+(d.c||'neutral');
+}
+
+function renderKpis(){
+  var t=S.today,w=S.week,m=S.month;
+  if(!t)return;
+  setKpi('k0',fmt(t.cost),'today',delta(t.cost,t.prevCost));
+  setKpi('k1',fmt(w&&w.cost),'this week',w?delta(w.cost,w.prevCost):{t:'—',c:'neutral'});
+  setKpi('k2',fmt(m&&m.cost),'this month',m?delta(m.cost,m.prevCost):{t:'—',c:'neutral'});
+  setKpi('k3',fmtK(t.inputTokens),'input tokens',{t:'\u00a0',c:'neutral'});
+  setKpi('k4',fmtK(t.outputTokens),'output tokens',{t:'\u00a0',c:'neutral'});
+  var brow=$$('brow'),bfill=$$('bfill'),btxt=$$('btxt');
+  if(t.budget!=null){
+    brow.classList.add('on');
+    var pct=Math.min(t.budgetPct,1),over=t.cost>t.budget;
+    bfill.style.width=(over?100:pct*100)+'%';
+    var cls=pct<.5?'ok':pct<.8?'warn':'danger';
+    bfill.className='bfill '+cls;
+    btxt.className='btxt '+(cls==='ok'?'':cls);
+    btxt.textContent=over?'$'+(t.cost-t.budget).toFixed(2)+' over':'$'+(t.budget-t.cost).toFixed(2)+' left';
+  } else {
+    brow.classList.remove('on');
+  }
+}
+
+function renderChart(){
+  var svg=$$('csvg'),xl=$$('cxl');
+  if(!S.trend)return;
+  var days=S.trend.days;
+  if(!days||days.length<2)return;
+  var W=800,H=80,P=4,max=Math.max.apply(null,days.map(function(d){return d.cost}))||1;
+  var pts=days.map(function(d,i){return[(i/(days.length-1))*W,P+(1-d.cost/max)*(H-P*2)]});
+  var lp=pts.map(function(p,i){return(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)}).join(' ');
+  svg.innerHTML='<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5b8def" stop-opacity=".25"/><stop offset="100%" stop-color="#5b8def" stop-opacity="0"/></linearGradient></defs>'+
+    '<path d="'+lp+' L'+W+','+H+' L0,'+H+' Z" fill="url(#ag)"/>'+
+    '<path d="'+lp+'" fill="none" stroke="#5b8def" stroke-width="1.5" stroke-linejoin="round"/>';
+  xl.innerHTML='';
+  var long=S.days<=7,step=Math.max(1,Math.floor(days.length/6));
+  var ls=[];
+  for(var i=0;i<days.length;i+=step)ls.push(days[i]);
+  if(ls[ls.length-1]!==days[days.length-1])ls.push(days[days.length-1]);
+  ls.forEach(function(d){var s=document.createElement('span');s.textContent=fdate(d.date,long);xl.appendChild(s)});
+}
+
+function renderBreakdown(){
+  var c=$$('br'),t=S.today;
+  if(!t){c.innerHTML='<div class="empty">waiting for data<br><span style="color:var(--muted);font-size:11px">pinch is tracking</span></div>';return}
+  var data=S.tab==='model'?t.byModel:S.tab==='type'?t.byType:t.bySession;
+  if(!data||!Object.keys(data).length){c.innerHTML='<div class="empty">no data</div>';return}
+  var e=Object.entries(data).sort(function(a,b){return b[1]-a[1]});
+  var mx=e[0][1];
+  c.innerHTML='';
+  e.forEach(function(en){
+    var r=document.createElement('div');r.className='row';
+    r.style.setProperty('--fill',mx?(en[1]/mx*100).toFixed(1)+'%':'0%');
+    r.innerHTML='<span class="rl">'+en[0]+'</span><span class="rv">'+fmt(en[1])+'</span>';
+    c.appendChild(r);
+  });
+}
+
+function renderLatest(){
+  var c=$$('lr'),recs=S.latest&&S.latest.records;
+  if(!recs||!recs.length){c.innerHTML='<div class="empty">waiting for data<br><span style="color:var(--muted);font-size:11px">pinch is tracking</span></div>';return}
+  var mx=Math.max.apply(null,recs.map(function(r){return r.cost}));
+  c.innerHTML='';
+  recs.forEach(function(r){
+    var row=document.createElement('div');row.className='row';
+    row.style.setProperty('--fill',mx?(r.cost/mx*100).toFixed(1)+'%':'0%');
+    row.innerHTML='<span class="rt">'+ftime(r.ts)+'</span><span class="rl">'+r.label+'</span><span class="rv">'+fmt(r.cost)+'</span>';
+    c.appendChild(row);
+  });
+}
+
+function render(){renderKpis();renderChart();renderBreakdown();renderLatest()}
+
+async function load(){
+  try{
+    var [a,b,c,d,e]=await Promise.all([
+      fetch('/api/today').then(function(r){return r.json()}),
+      fetch('/api/week').then(function(r){return r.json()}),
+      fetch('/api/month').then(function(r){return r.json()}),
+      fetch('/api/trend?days='+S.days).then(function(r){return r.json()}),
+      fetch('/api/latest?limit=10').then(function(r){return r.json()})
+    ]);
+    S.today=a;S.week=b;S.month=c;S.trend=d;S.latest=e;
+  }catch(ex){
+    S.today=MK.today;S.week=MK.week;S.month=MK.month;S.trend=MK.trend;S.latest=MK.latest;
+  }
+  render();
+}
+
+document.querySelectorAll('.rtab').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.rtab').forEach(function(x){x.classList.remove('active')});
+    b.classList.add('active');S.days=+b.dataset.d;load();
+  });
+});
+document.querySelectorAll('.tab').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+    b.classList.add('active');S.tab=b.dataset.t;renderBreakdown();
+  });
+});
+
+load();setInterval(load,30000);
+</script>
+</body>
+</html>
