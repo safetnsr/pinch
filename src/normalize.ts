@@ -4,7 +4,8 @@ import type { PricingData } from './types.js';
  * Normalize a model name to match pricing.json entries.
  * Handles provider prefixes, aliases, date suffixes, and fuzzy matching.
  */
-export function normalizeModelName(raw: string, pricing: PricingData): string {
+export function normalizeModelName(raw: any, pricing: PricingData): string {
+  if (!raw || typeof raw !== 'string') return 'unknown';
   let name = raw.toLowerCase().trim();
 
   // 1. Strip known provider prefixes (openrouter style)

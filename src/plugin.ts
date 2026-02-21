@@ -14,17 +14,19 @@ export default {
   version: '0.1.0',
 
   register(api: any) {
-    const config: PinchConfig = api.getConfig?.() || {};
-
-    // Initialize subsystems
     try {
+      console.log('[pinch] registering...');
+      // api.config is the FULL openclaw config — extract our plugin-specific config
+      const fullConfig = api?.config || {};
+      const config: PinchConfig = fullConfig?.plugins?.entries?.pinch?.config 
+        || fullConfig?.config  // some plugin APIs pass config directly
+        || {};
+      console.log('[pinch] config:', JSON.stringify(config));
+
+      // Initialize subsystems
       loadPricing(config.pricing);
       initStore();
       initBudget(config.budget);
-    } catch (err: any) {
-      console.error(`[pinch] Init error: ${err.message}`);
-      return;
-    }
 
     // Hook: agent_end — track costs
     api.on('agent_end', (event: any, ctx: any) => {
@@ -44,22 +46,25 @@ export default {
     });
 
     // Register agent tools
-    api.registerTool(costCheckTool.name, {
+    api.registerTool({
+      name: costCheckTool.name,
       description: costCheckTool.description,
-      parameters: costCheckTool.parameters,
-      execute: costCheckTool.execute,
+      parameters: costCheckTool.parameters || {},
+      async execute(_id: string, params: any) { return costCheckTool.execute(); },
     });
 
-    api.registerTool(costBreakdownTool.name, {
+    api.registerTool({
+      name: costBreakdownTool.name,
       description: costBreakdownTool.description,
-      parameters: costBreakdownTool.parameters,
-      execute: costBreakdownTool.execute,
+      parameters: costBreakdownTool.parameters || {},
+      async execute(_id: string, params: any) { return costBreakdownTool.execute(); },
     });
 
-    api.registerTool(budgetStatusTool.name, {
+    api.registerTool({
+      name: budgetStatusTool.name,
       description: budgetStatusTool.description,
-      parameters: budgetStatusTool.parameters,
-      execute: budgetStatusTool.execute,
+      parameters: budgetStatusTool.parameters || {},
+      async execute(_id: string, params: any) { return budgetStatusTool.execute(); },
     });
 
     // Start dashboard
@@ -76,5 +81,8 @@ export default {
     }
 
     console.log('[pinch] Cost tracking active');
+    } catch (err: any) {
+      console.error('[pinch] REGISTER FAILED:', err.stack || err.message);
+    }
   },
 };
