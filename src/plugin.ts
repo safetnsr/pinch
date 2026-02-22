@@ -6,9 +6,7 @@ import { costCheck, costCheckTool } from './tools/cost-check.js';
 import { costBreakdown, costBreakdownTool } from './tools/cost-breakdown.js';
 import { budgetStatus, budgetStatusTool } from './tools/budget-status.js';
 import { startDashboard } from './dashboard/server.js';
-import { appendFileSync } from 'fs';
-import { join } from 'path';
-import { homedir } from 'os';
+import { execFile } from 'child_process';
 import type { PinchConfig } from './types.js';
 
 export default {
@@ -36,17 +34,17 @@ export default {
       const record = trackAgentEnd(event, ctx);
       
       if (record) {
-        // Check budgets and write alerts to file for heartbeat to pick up
+        // Check budgets and send alerts via system event injection
         const alerts = checkBudgets();
         if (alerts.length > 0) {
-          const alertFile = join(homedir(), '.openclaw', 'data', 'pinch', 'pending-alerts.txt');
-          const content = alerts.join('\n') + '\n';
-          try {
-            appendFileSync(alertFile, content);
-            console.log(`[pinch] Budget alert written: ${alerts[0]}`);
-          } catch (err) {
-            console.warn(`[pinch] Failed to write alert: ${err}`);
-          }
+          const text = `[pinch budget alert] ${alerts.join(' | ')}`;
+          execFile('openclaw', ['system', 'event', '--text', text, '--mode', 'next-heartbeat'], 
+            { timeout: 10000 },
+            (err) => {
+              if (err) console.warn(`[pinch] Failed to send alert: ${err.message}`);
+              else console.log(`[pinch] Budget alert sent: ${alerts[0]}`);
+            }
+          );
         }
       }
     });
