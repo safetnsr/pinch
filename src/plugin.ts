@@ -6,7 +6,6 @@ import { costCheck, costCheckTool } from './tools/cost-check.js';
 import { costBreakdown, costBreakdownTool } from './tools/cost-breakdown.js';
 import { budgetStatus, budgetStatusTool } from './tools/budget-status.js';
 import { startDashboard } from './dashboard/server.js';
-import { execFile } from 'child_process';
 import type { PinchConfig } from './types.js';
 
 export default {
@@ -34,25 +33,26 @@ export default {
       const record = trackAgentEnd(event, ctx);
       
       if (record) {
-        // Check budgets and send alerts to active channel (from heartbeat config)
+        // Check budgets and send alerts directly via Telegram Bot API
         const alerts = checkBudgets();
         if (alerts.length > 0) {
           const text = `💰 ${alerts.join('\n')}`;
-          // Resolve target dynamically from heartbeat config
           const fullConfig = api.config as any;
-          const hb = fullConfig?.agents?.defaults?.heartbeat || {};
-          const channel = hb.target || 'telegram';
-          const target = hb.to || '';
-          if (!target) {
-            console.warn(`[pinch] Budget alert skipped — no heartbeat.to in config`);
+          const botToken = fullConfig?.channels?.telegram?.botToken;
+          const chatId = fullConfig?.agents?.defaults?.heartbeat?.to;
+          if (!botToken || !chatId) {
+            console.warn(`[pinch] Budget alert skipped — missing botToken or heartbeat.to`);
           } else {
-            execFile('openclaw', ['message', 'send', '--channel', channel, '--target', target, '--message', text], 
-              { timeout: 10000 },
-              (err) => {
-                if (err) console.warn(`[pinch] Failed to send alert: ${err.message}`);
-                else console.log(`[pinch] Budget alert sent to ${channel}:${target}`);
-              }
-            );
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ chat_id: chatId, text }),
+            }).then(r => r.json()).then((r: any) => {
+              if (r.ok) console.log(`[pinch] Budget alert sent to telegram:${chatId}`);
+              else console.warn(`[pinch] Telegram API error: ${r.description}`);
+            }).catch(err => {
+              console.warn(`[pinch] Failed to send alert: ${err.message}`);
+            });
           }
         }
       }
