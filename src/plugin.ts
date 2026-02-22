@@ -6,6 +6,9 @@ import { costCheck, costCheckTool } from './tools/cost-check.js';
 import { costBreakdown, costBreakdownTool } from './tools/cost-breakdown.js';
 import { budgetStatus, budgetStatusTool } from './tools/budget-status.js';
 import { startDashboard } from './dashboard/server.js';
+import { appendFileSync } from 'fs';
+import { join } from 'path';
+import { homedir } from 'os';
 import type { PinchConfig } from './types.js';
 
 export default {
@@ -33,13 +36,16 @@ export default {
       const record = trackAgentEnd(event, ctx);
       
       if (record) {
-        // Check budgets and send alerts
+        // Check budgets and write alerts to file for heartbeat to pick up
         const alerts = checkBudgets();
-        for (const alert of alerts) {
-          if (api.sendMessage) {
-            api.sendMessage(alert);
-          } else {
-            console.warn(`[pinch] ${alert}`);
+        if (alerts.length > 0) {
+          const alertFile = join(homedir(), '.openclaw', 'data', 'pinch', 'pending-alerts.txt');
+          const content = alerts.join('\n') + '\n';
+          try {
+            appendFileSync(alertFile, content);
+            console.log(`[pinch] Budget alert written: ${alerts[0]}`);
+          } catch (err) {
+            console.warn(`[pinch] Failed to write alert: ${err}`);
           }
         }
       }
