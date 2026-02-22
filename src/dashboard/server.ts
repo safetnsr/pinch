@@ -40,13 +40,23 @@ app.get('/api/month', (c) => {
 app.get('/api/trend', (c) => {
   const days = parseInt(c.req.query('days') || '7', 10);
   const trend = getTrend(Math.min(days, 90));
-  return c.json(trend);
+  return c.json({ days: trend });
 });
 
 app.get('/api/latest', (c) => {
   const limit = parseInt(c.req.query('limit') || '10', 10);
   const records = getLatest(Math.min(limit, 100));
-  return c.json(records);
+  // Map raw records to dashboard format
+  const mapped = records.map(r => ({
+    ts: r.ts,
+    label: r.sk.replace(/^agent:main:/, '').replace(/^agent:/, '') || 'main',
+    model: r.m.replace(/^anthropic\//, '').replace(/^openai\//, ''),
+    cost: r.c,
+    type: r.tt,
+    tools: r.tools,
+    dur: r.dur,
+  }));
+  return c.json({ records: mapped });
 });
 
 // Dashboard HTML
