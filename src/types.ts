@@ -67,8 +67,7 @@ export interface PinchConfig {
   pricing?: Record<string, Partial<ModelPricing>>;
   retentionDays?: number;
   alertDelivery?: {
-    channel?: string;
-    target?: string;
+    webhookUrl?: string;  // discord webhook, slack webhook, or generic HTTP POST
   };
 }
 

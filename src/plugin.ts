@@ -33,26 +33,47 @@ export default {
       const record = trackAgentEnd(event, ctx);
       
       if (record) {
-        // Check budgets and send alerts directly via Telegram Bot API
+        // Check budgets and send alerts
         const alerts = checkBudgets();
         if (alerts.length > 0) {
           const text = `💰 ${alerts.join('\n')}`;
           const fullConfig = api.config as any;
-          const botToken = fullConfig?.channels?.telegram?.botToken;
-          const chatId = fullConfig?.agents?.defaults?.heartbeat?.to;
-          if (!botToken || !chatId) {
-            console.warn(`[pinch] Budget alert skipped — missing botToken or heartbeat.to`);
-          } else {
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          const hb = fullConfig?.agents?.defaults?.heartbeat || {};
+          const channel = hb.target; // telegram, discord, slack, etc.
+          const chatId = hb.to;
+
+          // Channel-specific delivery
+          if (channel === 'telegram') {
+            const botToken = fullConfig?.channels?.telegram?.botToken;
+            if (botToken && chatId) {
+              fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text }),
+              }).then(r => r.json()).then((r: any) => {
+                if (r.ok) console.log(`[pinch] Alert sent to telegram:${chatId}`);
+                else console.warn(`[pinch] Telegram error: ${r.description}`);
+              }).catch(err => console.warn(`[pinch] Alert failed: ${err.message}`));
+            }
+          } else if (channel === 'discord') {
+            // Discord webhook from config or alertDelivery.webhookUrl
+            const webhookUrl = config.alertDelivery?.webhookUrl;
+            if (webhookUrl) {
+              fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: text }),
+              }).catch(err => console.warn(`[pinch] Discord alert failed: ${err.message}`));
+            }
+          } else if (config.alertDelivery?.webhookUrl) {
+            // Generic webhook fallback for any channel
+            fetch(config.alertDelivery.webhookUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ chat_id: chatId, text }),
-            }).then(r => r.json()).then((r: any) => {
-              if (r.ok) console.log(`[pinch] Budget alert sent to telegram:${chatId}`);
-              else console.warn(`[pinch] Telegram API error: ${r.description}`);
-            }).catch(err => {
-              console.warn(`[pinch] Failed to send alert: ${err.message}`);
-            });
+              body: JSON.stringify({ text, channel, target: chatId, alerts }),
+            }).catch(err => console.warn(`[pinch] Webhook alert failed: ${err.message}`));
+          } else {
+            console.warn(`[pinch] No alert delivery method for channel: ${channel}. Set alertDelivery.webhookUrl in pinch config.`);
           }
         }
       }
