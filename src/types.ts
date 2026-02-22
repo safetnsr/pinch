@@ -66,6 +66,10 @@ export interface PinchConfig {
   };
   pricing?: Record<string, Partial<ModelPricing>>;
   retentionDays?: number;
+  alertDelivery?: {
+    channel?: string;
+    target?: string;
+  };
 }
 
 export interface TodayTotals {

@@ -34,17 +34,25 @@ export default {
       const record = trackAgentEnd(event, ctx);
       
       if (record) {
-        // Check budgets and send alerts directly via telegram
+        // Check budgets and send alerts directly via configured channel
         const alerts = checkBudgets();
         if (alerts.length > 0) {
           const text = `💰 ${alerts.join('\n')}`;
-          execFile('openclaw', ['message', 'send', '--channel', 'telegram', '--message', text], 
-            { timeout: 10000 },
-            (err) => {
-              if (err) console.warn(`[pinch] Failed to send alert: ${err.message}`);
-              else console.log(`[pinch] Budget alert sent: ${alerts[0]}`);
-            }
-          );
+          // Resolve alert target from config delivery settings
+          const delivery = config.alertDelivery || {};
+          const channel = delivery.channel || 'telegram';
+          const target = delivery.target || '';
+          if (!target) {
+            console.warn(`[pinch] Budget alert skipped — no alertDelivery.target configured`);
+          } else {
+            execFile('openclaw', ['message', 'send', '--channel', channel, '--target', target, '--message', text], 
+              { timeout: 10000 },
+              (err) => {
+                if (err) console.warn(`[pinch] Failed to send alert: ${err.message}`);
+                else console.log(`[pinch] Budget alert sent to ${channel}:${target}`);
+              }
+            );
+          }
         }
       }
     });
