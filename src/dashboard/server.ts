@@ -11,8 +11,20 @@ const app = new Hono();
 // API routes
 app.get('/api/today', (c) => {
   const totals = getTodayTotals();
-  const budget = getBudgetStatus();
-  return c.json({ ...totals, budget });
+  const budgetInfo = getBudgetStatus();
+  // flatten budget for dashboard: expects today.budget (number) and today.budgetPct (0-1)
+  const dailyBudget = budgetInfo?.daily?.budget || null;
+  const budgetPct = dailyBudget ? totals.cost / dailyBudget : null;
+  // flatten byModel/byType for dashboard: {name: cost} instead of {name: {cost, records}}
+  const flatByModel: Record<string, number> = {};
+  const flatByType: Record<string, number> = {};
+  for (const [k, v] of Object.entries(totals.byModel || {})) {
+    flatByModel[k] = typeof v === 'object' ? (v as any).cost : v;
+  }
+  for (const [k, v] of Object.entries(totals.byType || {})) {
+    flatByType[k] = typeof v === 'object' ? (v as any).cost : v;
+  }
+  return c.json({ ...totals, byModel: flatByModel, byType: flatByType, budget: dailyBudget, budgetPct, budgetDetail: budgetInfo });
 });
 
 app.get('/api/week', (c) => {

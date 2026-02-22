@@ -88,5 +88,5 @@ export const budgetStatusTool = {
   name: 'pinch_budget',
   description: 'Budget status — remaining budget per period, projections, and cost optimization suggestions.',
   parameters: {},
-  execute: async () => budgetStatus(),
+  execute: async () => ({ content: [{ type: 'text', text: budgetStatus() }] }),
 };

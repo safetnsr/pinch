@@ -87,5 +87,5 @@ export const costBreakdownTool = {
   name: 'pinch_breakdown',
   description: 'Cost breakdown — top sessions, cron jobs, sub-agents, heartbeats. Shows where your money goes.',
   parameters: {},
-  execute: async () => costBreakdown(),
+  execute: async () => ({ content: [{ type: 'text', text: costBreakdown() }] }),
 };

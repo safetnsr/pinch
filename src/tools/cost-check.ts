@@ -56,5 +56,5 @@ export const costCheckTool = {
   name: 'pinch_check',
   description: 'Check current cost spend — today, this week, this month. Shows model breakdown and budget status.',
   parameters: {},
-  execute: async () => costCheck(),
+  execute: async () => ({ content: [{ type: 'text', text: costCheck() }] }),
 };
