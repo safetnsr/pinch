@@ -2,9 +2,9 @@ import { initStore, cleanupRetention } from './store.js';
 import { loadPricing } from './pricing.js';
 import { initBudget, checkBudgets } from './budget.js';
 import { trackAgentEnd } from './tracker.js';
-import { costCheckTool } from './tools/cost-check.js';
-import { costBreakdownTool } from './tools/cost-breakdown.js';
-import { budgetStatusTool } from './tools/budget-status.js';
+import { costCheck, costCheckTool } from './tools/cost-check.js';
+import { costBreakdown, costBreakdownTool } from './tools/cost-breakdown.js';
+import { budgetStatus, budgetStatusTool } from './tools/budget-status.js';
 import { startDashboard } from './dashboard/server.js';
 import type { PinchConfig } from './types.js';
 
@@ -45,26 +45,28 @@ export default {
       }
     });
 
-    // Register agent tools
+    // Register agent tools — must return { content: [{ type: 'text', text }] }
+    const wrap = (fn: () => string) => ({ content: [{ type: 'text' as const, text: fn() }] });
+
     api.registerTool({
       name: costCheckTool.name,
       description: costCheckTool.description,
       parameters: costCheckTool.parameters || {},
-      async execute(_id: string, params: any) { return costCheckTool.execute(); },
+      async execute(_id: string, _params: any) { return wrap(costCheck); },
     });
 
     api.registerTool({
       name: costBreakdownTool.name,
       description: costBreakdownTool.description,
       parameters: costBreakdownTool.parameters || {},
-      async execute(_id: string, params: any) { return costBreakdownTool.execute(); },
+      async execute(_id: string, _params: any) { return wrap(costBreakdown); },
     });
 
     api.registerTool({
       name: budgetStatusTool.name,
       description: budgetStatusTool.description,
       parameters: budgetStatusTool.parameters || {},
-      async execute(_id: string, params: any) { return budgetStatusTool.execute(); },
+      async execute(_id: string, _params: any) { return wrap(budgetStatus); },
     });
 
     // Start dashboard
