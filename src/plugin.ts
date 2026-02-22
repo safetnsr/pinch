@@ -34,16 +34,17 @@ export default {
       const record = trackAgentEnd(event, ctx);
       
       if (record) {
-        // Check budgets and send alerts directly via configured channel
+        // Check budgets and send alerts to active channel (from heartbeat config)
         const alerts = checkBudgets();
         if (alerts.length > 0) {
           const text = `💰 ${alerts.join('\n')}`;
-          // Resolve alert target from config delivery settings
-          const delivery = config.alertDelivery || {};
-          const channel = delivery.channel || 'telegram';
-          const target = delivery.target || '';
+          // Resolve target dynamically from heartbeat config
+          const fullConfig = api.config as any;
+          const hb = fullConfig?.agents?.defaults?.heartbeat || {};
+          const channel = hb.target || 'telegram';
+          const target = hb.to || '';
           if (!target) {
-            console.warn(`[pinch] Budget alert skipped — no alertDelivery.target configured`);
+            console.warn(`[pinch] Budget alert skipped — no heartbeat.to in config`);
           } else {
             execFile('openclaw', ['message', 'send', '--channel', channel, '--target', target, '--message', text], 
               { timeout: 10000 },
