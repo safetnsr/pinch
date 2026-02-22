@@ -34,11 +34,11 @@ export default {
       const record = trackAgentEnd(event, ctx);
       
       if (record) {
-        // Check budgets and send alerts via system event injection
+        // Check budgets and send alerts directly via telegram
         const alerts = checkBudgets();
         if (alerts.length > 0) {
-          const text = `[pinch budget alert] ${alerts.join(' | ')}`;
-          execFile('openclaw', ['system', 'event', '--text', text, '--mode', 'next-heartbeat'], 
+          const text = `💰 ${alerts.join('\n')}`;
+          execFile('openclaw', ['message', 'send', '--channel', 'telegram', '--message', text], 
             { timeout: 10000 },
             (err) => {
               if (err) console.warn(`[pinch] Failed to send alert: ${err.message}`);
