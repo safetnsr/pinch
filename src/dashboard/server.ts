@@ -61,11 +61,15 @@ app.get('/api/latest', (c) => {
 
 // Dashboard HTML
 app.get('/', (c) => {
-  const thisDir = dirname(fileURLToPath(import.meta.url));
+  // When bundled into plugin.js, import.meta.url points to plugin.js (one level up from dashboard/)
+  // Try multiple paths to handle both bundled and unbundled cases
+  const thisFile = fileURLToPath(import.meta.url);
+  const thisDir = dirname(thisFile);
   const htmlPaths = [
-    join(thisDir, 'index.html'),
-    join(thisDir, '..', 'src', 'dashboard', 'index.html'),
-    join(thisDir, '..', 'dashboard', 'index.html'),
+    join(thisDir, 'dashboard', 'index.html'),             // bundled: plugin.js → dashboard/index.html
+    join(thisDir, 'index.html'),                          // unbundled: server/dashboard/server.js → index.html
+    join(thisDir, '..', 'dashboard', 'index.html'),       // fallback
+    join(thisDir, '..', 'src', 'dashboard', 'index.html'), // dev fallback
   ];
   
   for (const p of htmlPaths) {
