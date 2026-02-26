@@ -80,16 +80,29 @@ app.get('/', (c) => {
 
 let server: any = null;
 
-export function startDashboard(port: number = 3334): void {
-  if (server) return;
-  
-  try {
-    server = serve({ fetch: app.fetch, port }, (info) => {
-      console.log(`[pinch] dashboard running at http://localhost:${info.port}`);
-    });
-  } catch (err: any) {
-    console.error(`[pinch] Failed to start dashboard: ${err.message}`);
+export function startDashboard(preferredPort: number = 3334): number | null {
+  if (server) return null;
+
+  // Try preferred port, then fallback up to 10 ports
+  for (let port = preferredPort; port < preferredPort + 10; port++) {
+    try {
+      let resolvedPort = port;
+      server = serve({ fetch: app.fetch, port }, (info) => {
+        resolvedPort = info.port;
+        console.log(`[pinch] dashboard → http://localhost:${info.port}`);
+      });
+      return resolvedPort;
+    } catch (err: any) {
+      if (err.code === 'EADDRINUSE') {
+        console.log(`[pinch] port ${port} in use, trying ${port + 1}...`);
+        continue;
+      }
+      console.error(`[pinch] dashboard failed: ${err.message}`);
+      return null;
+    }
   }
+  console.error(`[pinch] no free port found in range ${preferredPort}-${preferredPort + 9}`);
+  return null;
 }
 
 export function stopDashboard(): void {

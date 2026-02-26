@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsup';
+import { copyFileSync, mkdirSync } from 'fs';
 
 export default defineConfig({
   entry: [
@@ -14,4 +15,10 @@ export default defineConfig({
   sourcemap: false,
   external: ['hono', '@hono/node-server'],
   noExternal: [],
+  async onSuccess() {
+    // Copy static assets that tsup doesn't handle
+    mkdirSync('server/dashboard', { recursive: true });
+    copyFileSync('src/dashboard/index.html', 'server/dashboard/index.html');
+    console.log('Copied dashboard/index.html');
+  },
 });

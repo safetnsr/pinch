@@ -106,7 +106,10 @@ export default {
     // Start dashboard
     const dashboardConfig = config.dashboard || {};
     if (dashboardConfig.enabled !== false) {
-      startDashboard(dashboardConfig.port || 3334);
+      const port = startDashboard(dashboardConfig.port || 3334);
+      if (port) {
+        console.log(`[pinch] dashboard at http://localhost:${port}`);
+      }
     }
 
     // Retention cleanup (run once on startup)
