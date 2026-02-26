@@ -5,33 +5,47 @@
   "type": "module",
   "main": "./server/plugin.js",
   "bin": {
-    "pinch": "./bin/pinch.js"
+    "pinch": "bin/pinch.js"
   },
   "scripts": {
     "build": "tsup",
-    "test": "node --test tests/*.test.js"
+    "test": "npx tsx --test tests/*.test.ts"
   },
   "openclaw": {
-    "extensions": ["./server/plugin.js"]
+    "extensions": [
+      "./server/plugin.js"
+    ]
   },
   "dependencies": {
-    "hono": "^4.7.0",
-    "@hono/node-server": "^1.14.0"
+    "@hono/node-server": "^1.14.0",
+    "hono": "^4.7.0"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.0"
   },
   "files": [
     "server/",
     "pricing.json",
     "openclaw.plugin.json",
-    "bin/"
+    "bin/",
+    "README.md"
   ],
-  "keywords": ["openclaw", "cost-tracking", "agent", "budget", "llm"],
+  "engines": {
+    "node": ">=20"
+  },
+  "author": "safetnsr",
+  "keywords": [
+    "openclaw",
+    "cost-tracking",
+    "agent",
+    "budget",
+    "llm"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/safetnsr/pinch.git"
+    "url": "git+https://github.com/safetnsr/pinch.git"
   }
 }

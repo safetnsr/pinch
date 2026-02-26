@@ -1,6 +1,6 @@
 {
-  "version": 4,
-  "updatedAt": "2026-02-21",
+  "version": 5,
+  "updatedAt": "2026-02-26",
   "models": {
     "claude-opus-4": {
       "provider": "anthropic",
@@ -156,6 +156,38 @@
       "effectiveDate": "2025-04-05",
       "note": "pricing varies by host provider"
     },
+    "gpt-5": {
+      "provider": "openai",
+      "input": 1.25,
+      "output": 10.0,
+      "cacheRead": 0.125,
+      "effectiveDate": "2025-08-07",
+      "source": "https://platform.openai.com/docs/pricing"
+    },
+    "gpt-5-mini": {
+      "provider": "openai",
+      "input": 0.25,
+      "output": 2.0,
+      "cacheRead": 0.025,
+      "effectiveDate": "2025-08-07",
+      "source": "https://platform.openai.com/docs/pricing"
+    },
+    "gpt-5.1": {
+      "provider": "openai",
+      "input": 1.25,
+      "output": 10.0,
+      "cacheRead": 0.125,
+      "effectiveDate": "2026-01-01",
+      "source": "https://platform.openai.com/docs/pricing"
+    },
+    "gpt-5.2": {
+      "provider": "openai",
+      "input": 1.75,
+      "output": 14.0,
+      "cacheRead": 0.175,
+      "effectiveDate": "2025-12-10",
+      "source": "https://platform.openai.com/docs/pricing"
+    },
     "claude-opus-4-6": {
       "provider": "anthropic",
       "input": 5.0,
@@ -227,7 +259,10 @@
     "claude-sonnet-4-6-20250807": "claude-sonnet-4-6",
     "claude-sonnet-4-5-20250619": "claude-sonnet-4-5",
     "claude-haiku-4-5-20251001": "claude-haiku-4-5",
-    "claude-haiku-4-5": "claude-haiku-4-5"
+    "claude-haiku-4-5": "claude-haiku-4-5",
+    "gpt-5-chat-latest": "gpt-5",
+    "gpt-5.1-chat-latest": "gpt-5.1",
+    "gpt-5.2-chat-latest": "gpt-5.2"
   },
   "providerPrefixes": [
     "anthropic/",
