@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "updatedAt": "2026-02-26",
   "models": {
     "claude-opus-4": {
@@ -206,15 +206,6 @@
       "effectiveDate": "2025-06-19",
       "source": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
-    "claude-opus-4-1": {
-      "provider": "anthropic",
-      "input": 15.0,
-      "output": 75.0,
-      "cacheRead": 1.5,
-      "cacheWrite": 18.75,
-      "effectiveDate": "2025-05-14",
-      "source": "https://platform.claude.com/docs/en/about-claude/pricing"
-    },
     "claude-sonnet-4-6": {
       "provider": "anthropic",
       "input": 3.0,
@@ -241,6 +232,15 @@
       "cacheWrite": 1.25,
       "effectiveDate": "2025-10-01",
       "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+    },
+    "claude-sonnet-3.7": {
+      "provider": "anthropic",
+      "input": 3.0,
+      "output": 15.0,
+      "cacheRead": 0.3,
+      "cacheWrite": 3.75,
+      "effectiveDate": "2025-02-24",
+      "deprecated": true
     }
   },
   "aliases": {
@@ -262,7 +262,9 @@
     "claude-haiku-4-5": "claude-haiku-4-5",
     "gpt-5-chat-latest": "gpt-5",
     "gpt-5.1-chat-latest": "gpt-5.1",
-    "gpt-5.2-chat-latest": "gpt-5.2"
+    "gpt-5.2-chat-latest": "gpt-5.2",
+    "claude-sonnet-3-7": "claude-sonnet-3.7",
+    "claude-sonnet-3-7-20250219": "claude-sonnet-3.7"
   },
   "providerPrefixes": [
     "anthropic/",
