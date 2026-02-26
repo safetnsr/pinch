@@ -17,6 +17,8 @@ by model:
   claude-haiku-3.5   $0.22    4%
 ```
 
+![pinch](https://raw.githubusercontent.com/safetnsr/pinch/main/docs/showcase.png)
+
 ![pinch dashboard](https://raw.githubusercontent.com/safetnsr/pinch/main/docs/dashboard.png)
 
 ---
