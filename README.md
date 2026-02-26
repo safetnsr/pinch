@@ -31,6 +31,20 @@ no config needed. pinch starts tracking immediately.
 
 open the dashboard at `http://localhost:3334`.
 
+## update
+
+```bash
+openclaw plugins update pinch
+```
+
+then restart the gateway for the new version to load.
+
+## uninstall
+
+```bash
+openclaw plugins uninstall pinch
+```
+
 ---
 
 ## what you get
@@ -71,26 +85,41 @@ alerts fire in your chat at 50%, 80%, and 100% of budget. deduplicated per day.
 
 ## config
 
-everything is optional.
+everything is optional. add a `pinch` block to `~/.openclaw/openclaw.json`:
 
 ```json
 {
-  "budget": {
-    "daily": 7.00,
-    "weekly": 35.00,
-    "monthly": 100.00,
-    "enforcement": "warn",
-    "alertAt": [0.5, 0.8, 1.0]
-  },
-  "dashboard": { "enabled": true, "port": 3334 },
-  "pricing": {
-    "my-local-model": { "input": 0, "output": 0 }
-  },
-  "retentionDays": 90
+  "plugins": {
+    "entries": {
+      "pinch": {
+        "enabled": true,
+        "config": {
+          "budget": {
+            "daily": 7.00,
+            "weekly": 35.00,
+            "monthly": 100.00,
+            "enforcement": "warn",
+            "alertAt": [0.5, 0.8, 1.0]
+          },
+          "dashboard": { "enabled": true, "port": 3334 },
+          "pricing": {
+            "my-local-model": { "input": 0, "output": 0 }
+          },
+          "retentionDays": 90
+        }
+      }
+    }
+  }
 }
 ```
 
 `enforcement`: `"warn"` logs only · `"throttle"` slows requests · `"block"` halts new sessions.
+
+**budget alerts** — to receive alerts in telegram or another channel, add:
+
+```json
+"alertDelivery": { "channel": "telegram", "target": "<your-chat-id>" }
+```
 
 ---
 
