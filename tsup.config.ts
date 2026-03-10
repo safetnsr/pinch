@@ -5,6 +5,7 @@ export default defineConfig({
   entry: [
     'src/plugin.ts',
     'src/dashboard/server.ts',
+    'src/optimize/index.ts',
   ],
   outDir: 'server',
   format: 'esm',
