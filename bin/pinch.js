@@ -63,4 +63,17 @@ program
     });
   });
 
+program
+  .command('cache')
+  .description('prompt cache hit rate analysis — find what kills your cache')
+  .option('--since <days>', 'analyze last N days', '7')
+  .option('--json', 'JSON output')
+  .action(async (opts) => {
+    const { runCacheAnalysis } = await import('../server/cache-display.js');
+    await runCacheAnalysis({
+      days: parseInt(opts.since, 10) || 7,
+      json: opts.json || false,
+    });
+  });
+
 program.parse();

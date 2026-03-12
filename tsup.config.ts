@@ -6,6 +6,8 @@ export default defineConfig({
     'src/plugin.ts',
     'src/dashboard/server.ts',
     'src/optimize/index.ts',
+    'src/cache.ts',
+    'src/cache-display.ts',
   ],
   outDir: 'server',
   format: 'esm',
